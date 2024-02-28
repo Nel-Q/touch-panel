@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Row, Col, InputGroup, FormControl } from 'react-bootstrap'; 
+import VirtualKeyboard from 'react-virtual-keyboard';
 import PowerLogo from './Icons/power.svg';
 import VolumeLogo from './Icons/volume-up-fill.svg';
 import MicLogo from './Icons/mic-fill.svg';
@@ -33,6 +34,7 @@ function BottomBar () {
   const [numCameras, setNumCameras] = useState(2);
   const [numOfPresets, setNumOfPresets] = useState(6);
   const [renameMode, setRenameMode] = useState(false);
+  const [presetNames, setPresetNames] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [newPresetName, setNewPresetName] = useState('');
   const holdTimeoutRef = useRef(null);
@@ -43,6 +45,7 @@ function BottomBar () {
     window.CrComLib.subscribeState('n', '2', value=> setMicVolume(value));
     // window.CrComLib.subscribeState('n', '41', value=> setNumCameras(value));
     // window.CrComLib.subscribeState('n', '46', value=> setNumOfPresets(value));
+    setPresetNames(Array(6).fill('').map((_, index) => `Preset ${index + 1}`));
     console.log(numCameras)
   }, [])
 
@@ -141,7 +144,10 @@ const handlePresetLongPress = (presetNumber) => {
 // Function to handle saving the new name for the preset
 const handleSaveNewName = () => {
   // Handle saving the new name for the preset
+  const updatedPresetNames = [...presetNames];
+  updatedPresetNames[selectedPreset - 1] = newPresetName;
   console.log(`New name for preset ${selectedPreset}: ${newPresetName}`);
+  setPresetNames(updatedPresetNames);
   setRenameMode(false);
   setNewPresetName('');
 };
@@ -335,14 +341,15 @@ switch (cameraSelected) {
                     )
                   })} */}
                   {Array.from({ length: Math.ceil(numOfPresets / 2) }).map((_, rowIndex) => (
-                    <Row key={rowIndex} className="justify-content-center ">
+                    <Row key={rowIndex} className="justify-content-center mb-2" style={{height: '4rem'}}>
                       {Array.from({ length: 2 }, (_, colIndex) => {
                         const presetNumber = rowIndex * 2 + colIndex + 1;
                         return (
                           presetNumber <= numOfPresets && (
-                            <Col key={presetNumber}  className="mb-3">
+                            <Col key={presetNumber}  className="" style={{width: '12rem'}}>
                               <Button
                                 className='btn btn-info rounded-pill mr-4'
+                                style={{height: '3.5rem', fontSize: '1.5rem'}}
                                 onClick={() => handlePresetClicked(presetNumber)}
                                 onMouseDown={() => {
                                   holdTimeoutRef.current = setTimeout(() => handlePresetLongPress(presetNumber), 500);
@@ -350,7 +357,7 @@ switch (cameraSelected) {
                                 onMouseUp={() => clearTimeout(holdTimeoutRef.current)}
                                 onMouseLeave={() => clearTimeout(holdTimeoutRef.current)}
                               >
-                                Preset {presetNumber}
+                                {presetNames[presetNumber - 1]}
                               </Button>
                             </Col>
                           )
@@ -358,18 +365,7 @@ switch (cameraSelected) {
                       })}
                     </Row>
                   ))}
-                  {/* <div className='d-flex flex-row py-3'>
-                    <Button className='btn btn-info rounded-pill mr-4 '>Preset 1</Button>
-                    <Button className='btn btn-info rounded-pill'>Preset 2</Button>
-                  </div>
-                  <div className='d-flex flex-row py-3'>
-                    <Button className='btn btn-info rounded-pill mr-4'>Preset 3</Button>
-                    <Button className='btn btn-info rounded-pill'>Preset 4</Button>
-                  </div>
-                  <div className='d-flex flex-row py-3'>
-                    <Button className='btn btn-info rounded-pill mr-4'>Preset 5</Button>
-                    <Button className='btn btn-info rounded-pill'>Preset 6</Button>
-                  </div> */}
+                  
                 </div>
                 {renameMode && (
                   <div>
@@ -379,10 +375,10 @@ switch (cameraSelected) {
                         value={newPresetName}
                         onChange={handleNewPresetNameChange}
                       />
-                      <InputGroup.Append>
+                     
                         <Button variant="outline-secondary" onClick={handleSaveNewName}>Save</Button>
                         <Button variant="outline-secondary" onClick={handleCancelRename}>Cancel</Button>
-                      </InputGroup.Append>
+                      
                     </InputGroup>
                   </div>
       )}
