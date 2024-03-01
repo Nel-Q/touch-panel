@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Row, Col, InputGroup, FormControl } from 'react-bootstrap'; 
+import { Button, Row, Col, InputGroup, FormControl, Modal } from 'react-bootstrap'; 
 import VirtualKeyboard from 'react-virtual-keyboard';
 import PowerLogo from './Icons/power.svg';
 import VolumeLogo from './Icons/volume-up-fill.svg';
@@ -138,6 +138,7 @@ const sendSignal= (joinNumber, action) => {
 const handlePresetLongPress = (presetNumber) => {
   setSelectedPreset(presetNumber);
   setRenameMode(true);
+  window.CrComLib.publishEvent('n', '48', presetNumber);
   console.log(`Long press on preset ${presetNumber}`);
 };
 
@@ -148,6 +149,9 @@ const handleSaveNewName = () => {
   updatedPresetNames[selectedPreset - 1] = newPresetName;
   console.log(`New name for preset ${selectedPreset}: ${newPresetName}`);
   setPresetNames(updatedPresetNames);
+  window.CrComLib.publishEvent('s', '101', newPresetName);
+  window.CrComLib.publishEvent('b', '190', true);
+  window.CrComLib.publishEvent('b', '190', false);
   setRenameMode(false);
   setNewPresetName('');
 };
@@ -367,7 +371,7 @@ switch (cameraSelected) {
                   ))}
                   
                 </div>
-                {renameMode && (
+                {/* {renameMode && (
                   <div>
                     <InputGroup className="mb-3">
                       <FormControl
@@ -381,7 +385,29 @@ switch (cameraSelected) {
                       
                     </InputGroup>
                   </div>
-      )}
+      )} */}
+      <Modal show={renameMode} onHide={handleCancelRename} dialogClassName='rename-modal vh-40'>
+        <Modal.Header closeButton>
+          <Modal.Title>Preset Rename</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <InputGroup className="mb-3">
+            <FormControl
+              placeholder="Enter new preset name"
+              value={newPresetName}
+              onChange={handleNewPresetNameChange}
+            />
+          </InputGroup>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelRename}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSaveNewName}>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
               </div>
             </div>
           )}
