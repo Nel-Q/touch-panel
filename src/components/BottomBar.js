@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Row, Col, InputGroup, FormControl, Modal } from 'react-bootstrap'; 
-import VirtualKeyboard from 'react-virtual-keyboard';
+
 import PowerLogo from './Icons/power.svg';
 import VolumeLogo from './Icons/volume-up-fill.svg';
 import MicLogo from './Icons/mic-fill.svg';
@@ -33,10 +33,14 @@ function BottomBar () {
   const [isCeilingMicMuted, setIsCeilingMicMuted] = useState(false);
   const [numCameras, setNumCameras] = useState(2);
   const [numOfPresets, setNumOfPresets] = useState(6);
-  const [renameMode, setRenameMode] = useState(false);
+  const [presetRenameMode, setpresetRenameMode] = useState(false);
   const [presetNames, setPresetNames] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [newPresetName, setNewPresetName] = useState('');
+  const [camNames, setCamNames] = useState([]);
+  const [camRenameMode, setCamRenameMode] = useState(false);
+  const [selectedCamera, setSelectedCamera] = useState(null);
+  const [newCamName, setNewCamName] = useState('');
   const holdTimeoutRef = useRef(null);
   const navigate = useNavigate();
 
@@ -46,6 +50,7 @@ function BottomBar () {
     // window.CrComLib.subscribeState('n', '41', value=> setNumCameras(value));
     // window.CrComLib.subscribeState('n', '46', value=> setNumOfPresets(value));
     setPresetNames(Array(6).fill('').map((_, index) => `Preset ${index + 1}`));
+    setCamNames(Array(2).fill('').map((_, index) => `Camera ${index + 1}`));
     console.log(numCameras)
   }, [])
 
@@ -105,6 +110,7 @@ const handleCameraClicked = (cameraName, cameraNum) => {
   setCameraSelected(cameraName);
   setShowControls(true);
   window.CrComLib.publishEvent('n', '42', cameraNum);
+  console.log(`${cameraName} clicked` )
 }
 const handlePresetClicked = (presetNum) => {
   window.CrComLib.publishEvent('n', '47', presetNum);
@@ -137,34 +143,65 @@ const sendSignal= (joinNumber, action) => {
 }
 const handlePresetLongPress = (presetNumber) => {
   setSelectedPreset(presetNumber);
-  setRenameMode(true);
+  setpresetRenameMode(true);
   window.CrComLib.publishEvent('n', '48', presetNumber);
   console.log(`Long press on preset ${presetNumber}`);
 };
 
 // Function to handle saving the new name for the preset
-const handleSaveNewName = () => {
+const handleSaveNewPresetName = () => {
   // Handle saving the new name for the preset
   const updatedPresetNames = [...presetNames];
   updatedPresetNames[selectedPreset - 1] = newPresetName;
   console.log(`New name for preset ${selectedPreset}: ${newPresetName}`);
   setPresetNames(updatedPresetNames);
-  window.CrComLib.publishEvent('s', '101', newPresetName);
+  window.CrComLib.publishEvent('s', '40', newPresetName);
   window.CrComLib.publishEvent('b', '190', true);
   window.CrComLib.publishEvent('b', '190', false);
-  setRenameMode(false);
+  setpresetRenameMode(false);
   setNewPresetName('');
 };
 
 // Function to handle cancelling the renaming process
-const handleCancelRename = () => {
-  setRenameMode(false);
+const handleCancelPresetRename = () => {
+  setpresetRenameMode(false);
   setNewPresetName('');
 };
 
 // Function to handle changes in the new preset name input field
 const handleNewPresetNameChange = (event) => {
   setNewPresetName(event.target.value);
+};
+const handleCamLongPress = (camNumber) => {
+  setSelectedCamera(camNumber);
+  setCamRenameMode(true);
+  window.CrComLib.publishEvent('n', '43', camNumber);
+  console.log(`Long press on Camera ${camNumber}`);
+};
+
+// Function to handle saving the new name for the preset
+const handleSaveNewCamName = () => {
+  // Handle saving the new name for the preset
+  const updatedCamNames = [...camNames];
+  updatedCamNames[selectedCamera - 1] = newCamName;
+  console.log(`New name for camera${selectedCamera}: ${newCamName}`);
+  setCamNames(updatedCamNames);
+  window.CrComLib.publishEvent('s', '40', newCamName);
+  window.CrComLib.publishEvent('b', '190', true);
+  window.CrComLib.publishEvent('b', '190', false);
+  setCamRenameMode(false);
+  setNewCamName('');
+};
+
+// Function to handle cancelling the renaming process
+const handleCancelCamRename = () => {
+  setCamRenameMode(false);
+  setNewCamName('');
+};
+
+// Function to handle changes in the new preset name input field
+const handleNewCamNameChange = (event) => {
+  setNewCamName(event.target.value);
 };
 let camNum;
 switch (cameraSelected) {
@@ -284,21 +321,54 @@ switch (cameraSelected) {
           <h5>Select Camera:</h5>
           <div className='d-flex flex-row justify-content-between mx-auto py-4'>
             {Array.from({length:2}, (_, index) => {
+              const camNumber = index + 1
               const camName = `Camera${index + 1}`;
               return(
                 <div key={camName} 
                 className={`col-4 rounded-pill mx-auto d-flex flex-row justify-content-center py-2`}
                 style={{backgroundColor:(cameraSelected === camName) ? "#007FA4" : "#dee2e6"}}
-                onClick={() => handleCameraClicked(camName, index +1)}>
+                onClick={() => handleCameraClicked(camName, index +1)}
+                onMouseDown={() => {
+                  holdTimeoutRef.current = setTimeout(() => handleCamLongPress(camNumber), 500);
+                }}
+                onMouseUp={() => clearTimeout(holdTimeoutRef.current)}
+                onTouchStart={() => {
+                  holdTimeoutRef.current = setTimeout(() => handleCamLongPress(camNumber), 500);
+                }}
+                onTouchEnd={() => clearTimeout(holdTimeoutRef.current)}
+                onMouseLeave={() => clearTimeout(holdTimeoutRef.current)}>
                 <img 
                   src={(cameraSelected === camName) ? CameraSmallWhite : CameraSmall}
                   alt='Camera Icon'
                   className=' img-fluid pr-2'/>
-                  <h5 className={`h6 ${(cameraSelected === camName) ? 'text-white' : ''}`}>Camera {index + 1}</h5>
+                  <h5 className={`h6 ${(cameraSelected === camName) ? 'text-white' : ''}`}>{camNames[camNumber - 1]}</h5>
                 </div>)
             })}
             
           </div>
+          <Modal show={camRenameMode} onHide={handleCancelCamRename} dialogClassName='rename-modal vh-40'>
+            <Modal.Header closeButton>
+              <Modal.Title>Camera Rename</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <InputGroup className="mb-3">
+                <FormControl
+                  placeholder="Enter new camera name"
+                  value={newCamName}
+                  onChange={handleNewCamNameChange}
+                />
+              </InputGroup>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCancelCamRename}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={handleSaveNewCamName}>
+                Save
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
           {showControls && (
             <div className='pt-4'>
               <h5 className='pb-3'>Camera {camNum}</h5>
@@ -360,6 +430,10 @@ switch (cameraSelected) {
                                 }}
                                 onMouseUp={() => clearTimeout(holdTimeoutRef.current)}
                                 onMouseLeave={() => clearTimeout(holdTimeoutRef.current)}
+                                onTouchStart={() => {
+                                  holdTimeoutRef.current = setTimeout(() => handlePresetLongPress(presetNumber), 500);
+                                }}
+                                onTouchEnd={() => clearTimeout(holdTimeoutRef.current)}
                               >
                                 {presetNames[presetNumber - 1]}
                               </Button>
@@ -371,7 +445,7 @@ switch (cameraSelected) {
                   ))}
                   
                 </div>
-                {/* {renameMode && (
+                {/* {presetRenameMode && (
                   <div>
                     <InputGroup className="mb-3">
                       <FormControl
@@ -380,13 +454,13 @@ switch (cameraSelected) {
                         onChange={handleNewPresetNameChange}
                       />
                      
-                        <Button variant="outline-secondary" onClick={handleSaveNewName}>Save</Button>
-                        <Button variant="outline-secondary" onClick={handleCancelRename}>Cancel</Button>
+                        <Button variant="outline-secondary" onClick={handleSaveNewPresetName}>Save</Button>
+                        <Button variant="outline-secondary" onClick={handleCancelPresetRename}>Cancel</Button>
                       
                     </InputGroup>
                   </div>
       )} */}
-      <Modal show={renameMode} onHide={handleCancelRename} dialogClassName='rename-modal vh-40'>
+      <Modal show={presetRenameMode} onHide={handleCancelPresetRename} dialogClassName='rename-modal vh-40'>
         <Modal.Header closeButton>
           <Modal.Title>Preset Rename</Modal.Title>
         </Modal.Header>
@@ -400,10 +474,10 @@ switch (cameraSelected) {
           </InputGroup>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancelRename}>
+          <Button variant="secondary" onClick={handleCancelPresetRename}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSaveNewName}>
+          <Button variant="primary" onClick={handleSaveNewPresetName}>
             Save
           </Button>
         </Modal.Footer>
