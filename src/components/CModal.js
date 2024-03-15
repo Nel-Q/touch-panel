@@ -25,7 +25,7 @@ const CModal = ({ show, onHide, title, children }) => {
         <div className="modal-content">
           <div className="modal-header bg-secondary d-flex justify-content-between align-items-center">
             <div className='row'>
-              <Button variant="link" onClick={onHide} className="btn-close text-white">
+              <Button variant="link" onClick={onHide} className="btn-close text-white border-0">
                       <img
                           src={BackArrow}
                           alt='Back arrow'
@@ -34,7 +34,7 @@ const CModal = ({ show, onHide, title, children }) => {
             <h5 className='modal-title text-black'>{title}</h5>
             </div>
             
-            <Button variant="link" onClick={onHide} className="btn-close text-white ">
+            <Button variant="link" onClick={onHide} className="btn-close text-white border-0">
                     <img
                         src={X}
                         alt='X'

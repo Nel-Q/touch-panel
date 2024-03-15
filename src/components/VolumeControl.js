@@ -5,37 +5,42 @@ import AddIcon from './Icons/plus.svg';
 import RemoveIcon from './Icons/dash.svg';
 import './VolumeControl.css'
 
-const VolumeControl = ({initialVolume, plusJoin, minusJoin, isMuted}) => {
+const VolumeControl = ({initialVolume, plusJoin, minusJoin, isMuted, volumeJoin}) => {
   const [volume, setVolume] = useState(0);
 
 
   useEffect(() => {
     // Map decibels to the volume range (0 to 20)
-    const mappedVolume = Math.round((initialVolume + 30) * (20 / 60));
+    const mappedVolume = Math.round((initialVolume * 20) / 65535);
     setVolume(mappedVolume);
+    console.log('initial volume:', initialVolume, 'mapped volume:', mappedVolume);
   }, [initialVolume]);
 
   const handleIncreaseVolume = () => {
     if (volume < 20) {
       setVolume((prevVolume) => prevVolume + 1);
+      const volumeLevel = Math.round((volume * 65535) / 20);
       window.CrComLib.publishEvent('b', `${plusJoin}`, true);
       window.CrComLib.publishEvent('b', `${plusJoin}`, false);
-      console.log('volume increased')
+      window.CrComLib.publishEvent('n', `${volumeJoin}`, volumeLevel);
+      console.log('volume increased', volume)
     }
   };
 
   const handleDecreaseVolume = () => {
     if (volume > 0) {
       setVolume((prevVolume) => prevVolume - 1);
+      const volumeLevel = Math.round((volume * 65535) / 20);
       window.CrComLib.publishEvent('b', `${minusJoin}`, true);
       window.CrComLib.publishEvent('b', `${minusJoin}`, false);
-      console.log('volume decreased')
+      window.CrComLib.publishEvent('n', `${volumeJoin}`, volumeLevel);
+      console.log('volume decreased', volume)
     }
   };
   useEffect(() => {
     // Map decibels to the volume range (0 to 20)
     if (!isMuted){
-        const mappedVolume = Math.round((initialVolume + 30) * (20 / 60));
+        const mappedVolume = Math.round((initialVolume * 20) / 65535);
         setVolume(mappedVolume);
     }
     

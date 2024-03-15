@@ -26,8 +26,10 @@
     "build": "react-scripts build",
     "build:archive": "ch5-cli archive -p touch-panel -P samplesource=ch5-react -d build -o dist",
     "deploy": "ch5-cli deploy -p -H 129.105.110.238 -t web dist/touch-panel.ch5z",
+    "deploy-touchscreen": "ch5-cli deploy -H 129.105.236.194 -t touchscreen dist/touch-panel.ch5z",
     "build:onestep": "npm run build && npm run build:archive",
     "build:deploy": "npm run build:onestep && npm run deploy",
+    "build:deploy-touchscreen": "npm run build:onestep && npm run deploy touchscreen",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "postinstall": "patch-package"

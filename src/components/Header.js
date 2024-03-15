@@ -22,7 +22,7 @@ function Header(){
     
     return(
         <div className='row p-0 m-0 headerRow'>
-            <div className="col-12 d-flex flex-row justify-content-evenly align-items-center text-white font-size-3 font-size-4-xl p-0" style={{ backgroundColor: 'var(--primary)' }}>
+            <div className="col-12 d-flex flex-row justify-content-evenly align-items-center  font-size-3 font-size-4-xl p-0" style={{ backgroundColor: 'var(--primary)' }}>
                     <div className="col-3">
                         <img
                             src={logo}
@@ -30,10 +30,10 @@ function Header(){
                             className='img-fluid'
                             style={{width:'12em', height:'auto'}}/>
                     </div>
-                    <div className="col-3 text-center">
+                    <div className="col-3 text-center text-white">
                         <span>{(classRoom == "") ? 'Room ABCD' : classRoom}</span>
                     </div>
-                    <div className="col-4 text-center">
+                    <div className="col-4 text-center text-white">
                                 <span className="d-block mb-2">
                                     <ch5-datetime 
                                         displaytype="date" 
@@ -55,8 +55,8 @@ function Header(){
                     <div>
                     <CModal show={showHelpModal} onHide={handleCloseHelpModal} title='Help' className="justify-content-center">
                         <div className='content col-10 align-items-center ml-5 pl-5 pt-5'>
-                            <h5 className='align-itesm-center '>Please use the number below to call our support team for assistance</h5>
-                            <h5 className='text-info'>847-555-555</h5>
+                            <h5 className='align-items-center'>Please use the number below to call our support team for assistance</h5>
+                            <h5 className='text-info'>847-467-7666</h5>
                             <h5>You are currently in room:</h5>
                             <h5 className='text-info'>{(classRoom == "") ? 'Room ABCD' : classRoom}</h5>
                         </div>

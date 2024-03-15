@@ -28,7 +28,7 @@ function WelcomePage() {
                 </div>
             </div>
             <div className="row mt-5 align-items-center">
-                <div className="col-12 mx-auto">
+                <div className="col-12 text-center">
                     <h1 className="display-2">Welcome.</h1>
                 </div>
             </div>

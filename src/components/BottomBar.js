@@ -1,10 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from 'react-bootstrap'; 
-import PowerLogo from './Icons/power.svg';
-import VolumeLogo from './Icons/volume-up-fill.svg';
-import MicLogo from './Icons/mic-fill.svg';
-import CameraLogo from './Icons/camera-video-fill.svg';
+import { Button, Row, Col, InputGroup, FormControl, Modal } from 'react-bootstrap'; 
 import CameraSmall from './Icons/camera-video-small.svg';
 import CameraSmallWhite from './Icons/camera-video-white.svg';
 import './BottomBar.css';
@@ -13,7 +9,6 @@ import Opad from './Opad';
 import VolumeControl from './VolumeControl';
 import MicIcon from './Icons/mic-fill2.svg';
 import MicMuteIcon from './Icons/mic-mute-fill.svg';
-import Dpad from './Icons/dpad-big.svg';
 import MinusWhite from './Icons/dashWhite.svg';
 import PlusWhite from './Icons/plusWhite.svg';
 import Zoom from "./Icons/zoom-in.svg";
@@ -31,12 +26,55 @@ function BottomBar () {
   const [isPresentationMuted, setIsPresentationMuted] = useState(false);
   const [isMicMuted, setIsMicMuted] = useState(false);
   const [isCeilingMicMuted, setIsCeilingMicMuted] = useState(false);
+  const [numCameras, setNumCameras] = useState(0);
+  const [numOfPresets, setNumOfPresets] = useState(0);
+  const [presetRenameMode, setpresetRenameMode] = useState(false);
+  const [presetNames, setPresetNames] = useState([]);
+  const [selectedPreset, setSelectedPreset] = useState(null);
+  const [newPresetName, setNewPresetName] = useState('');
+  const [camNames, setCamNames] = useState([]);
+  const [tempCamName, setTempCamName] = useState('');
+  const [tempPresetName, setTempPresetName] = useState('');
+  const [camRenameMode, setCamRenameMode] = useState(false);
+  const [selectedCamera, setSelectedCamera] = useState(null);
+  const [newCamName, setNewCamName] = useState('');
+  const holdTimeoutRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    window.CrComLib.subscribeState('n', '1', value=> setPresentationVolume(value))
-    window.CrComLib.subscribeState('n', '2', value=> setMicVolume(value))
-  }, [])
+    window.CrComLib.subscribeState('n', '1', value=> setPresentationVolume(value));
+    window.CrComLib.subscribeState('n', '2', value=> setMicVolume(value));
+    window.CrComLib.subscribeState('n', '41', value=> setNumCameras(value));
+    window.CrComLib.subscribeState('n', '46', value=> setNumOfPresets(value));
+
+    setPresetNames(Array(numOfPresets).fill('').map((_, index) =>{
+      let value;
+      window.CrComLib.subscribeState('s', `${index + 101}`, incomingValue => {
+        value = incomingValue;
+        console.log(`value is: ${value}`)
+        setTempPresetName(value)
+        console.log(`temp preset name is ${tempPresetName}`);
+      });
+      return value;
+    }));
+    
+    setCamNames(Array(numCameras).fill('').map((_, index) =>
+    {
+      let value;
+      window.CrComLib.subscribeState('s', `${index + 91}`, incomingValue => {
+        value = incomingValue;
+        console.log(`value is: ${value}`)
+        setTempCamName(value)
+        console.log(`temp Cam name is ${tempCamName}`);
+      });
+      return value;
+    }));
+    console.log(`number of cameras is ${numCameras}`);
+    console.log(`number of presets is ${numOfPresets}`);
+    console.log(`cameras array is ${camNames}`);
+    console.log(`presets array is ${presetNames}`);
+    
+  }, [numCameras, numOfPresets, tempCamName, tempPresetName])
 
   const programShutOff = () => {
     handleClosePowerModal()
@@ -49,7 +87,6 @@ function BottomBar () {
   const handleShowPowerModal = () => {
     console.log("Showing Power Modal")
     setShowPowerModal(true);
-    console.log(showPowerModal);
   }
   const handleClosePowerModal = () => {
     setShowPowerModal(false);
@@ -58,15 +95,14 @@ function BottomBar () {
   const handleShowVolumeModal = () => {
     console.log("Showing Volume Modal")
     setShowVolumeModal(true);
-    console.log(showVolumeModal);
   }
   const handleCloseVolumeModal = () => {
     setShowVolumeModal(false);
   }
   const handleShowMicModal = () => {
-    console.log("Showing Volume Modal")
+    console.log("Showing Microphones Volume Modal")
     setShowMicModal(true);
-    console.log(showVolumeModal);
+
   }
   const handleCloseMicModal = () => {
     setShowMicModal(false);
@@ -74,7 +110,7 @@ function BottomBar () {
   const handleShowCamModal = () => {
     console.log("Showing Cam Modal")
     setShowCamModal(true);
-    console.log(showVolumeModal);
+    
   }
   const handleCloseCamModal = () => {
     console.log("Closing Cam Modal")
@@ -93,9 +129,12 @@ function BottomBar () {
 const handleCameraClicked = (cameraNum) => {
   setCameraSelected(cameraNum);
   setShowControls(true);
-  window.CrComLib.publishEvent('n', '42', true);
-  window.CrComLib.publishEvent('n', '42', false);
-
+  window.CrComLib.publishEvent('n', '42', cameraNum);
+  console.log(`${camNames[cameraNum - 1]}clicked` )
+}
+const handlePresetClicked = (presetNum) => {
+  window.CrComLib.publishEvent('n', '47', presetNum);
+  console.log(`Preset ${presetNum} pressed`)
 }
 const toggleMicMute = () => {
   setIsMicMuted((prevIsMicMuted) => !(prevIsMicMuted));
@@ -122,15 +161,68 @@ const sendSignal= (joinNumber, action) => {
   window.CrComLib.publishEvent('b', `${joinNumber}`, false);
   console.log(`${action} pressed`);
 }
-let camNum;
-switch (cameraSelected) {
-  case 'Camera1':
-      camNum = "One"
-      break;
-  case 'Camera2':
-      camNum = "Two"
-      break;
-} 
+const handlePresetLongPress = (presetNumber) => {
+  setSelectedPreset(presetNumber);
+  setpresetRenameMode(true);
+  window.CrComLib.publishEvent('n', '48', presetNumber);
+  console.log(`Long press on preset ${presetNumber}`);
+};
+
+// Function to handle saving the new name for the preset
+const handleSaveNewPresetName = () => {
+  // Handle saving the new name for the preset
+  const updatedPresetNames = [...presetNames];
+  updatedPresetNames[selectedPreset - 1] = newPresetName;
+  console.log(`New name for preset ${selectedPreset}: ${newPresetName}`);
+  setPresetNames(updatedPresetNames);
+  window.CrComLib.publishEvent('s', '40', newPresetName);
+  window.CrComLib.publishEvent('b', '190', true);
+  window.CrComLib.publishEvent('b', '190', false);
+  setpresetRenameMode(false);
+  setNewPresetName('');
+};
+
+// Function to handle cancelling the renaming process
+const handleCancelPresetRename = () => {
+  setpresetRenameMode(false);
+  setNewPresetName('');
+};
+
+// Function to handle changes in the new preset name input field
+const handleNewPresetNameChange = (event) => {
+  setNewPresetName(event.target.value);
+};
+const handleCamLongPress = (camNumber) => {
+  setSelectedCamera(camNumber);
+  setCamRenameMode(true);
+  window.CrComLib.publishEvent('n', '43', camNumber);
+  console.log(`Long press on Camera ${camNumber}`);
+};
+
+// Function to handle saving the new name for the preset
+const handleSaveNewCamName = () => {
+  // Handle saving the new name for the preset
+  const updatedCamNames = [...camNames];
+  updatedCamNames[selectedCamera - 1] = newCamName;
+  console.log(`New name for camera${selectedCamera}: ${newCamName}`);
+  setCamNames(updatedCamNames);
+  window.CrComLib.publishEvent('s', '40', newCamName);
+  window.CrComLib.publishEvent('b', '190', true);
+  window.CrComLib.publishEvent('b', '190', false);
+  setCamRenameMode(false);
+  setNewCamName('');
+};
+
+// Function to handle cancelling the renaming process
+const handleCancelCamRename = () => {
+  setCamRenameMode(false);
+  setNewCamName('');
+};
+
+// Function to handle changes in the new preset name input field
+const handleNewCamNameChange = (event) => {
+  setNewCamName(event.target.value);
+};
   
   return (
 
@@ -212,7 +304,7 @@ switch (cameraSelected) {
 
         <CModal show={showVolumeModal} onHide={handleCloseVolumeModal} title='Presentation Volume'>
           <div className='col-10 align-items-center mx-auto pl-5 pt-4 mt-4'>
-            <VolumeControl initialVolume={presentationVolume} plusJoin='22' minusJoin='21' isMuted={isPresentationMuted}/>
+            <VolumeControl initialVolume={presentationVolume} plusJoin='22' minusJoin='21' isMuted={isPresentationMuted} volumeJoin='1'/>
             <div onClick={togglePresentationMute} className='col-4 mx-auto pl-5'>
               <div className={`rounded-circle muteIcon   ${isPresentationMuted ? 'bg-info' : ''}`}
                 style={{backgroundColor: '#e9ecef', width:'90px', height:'90px'}}>
@@ -265,29 +357,56 @@ switch (cameraSelected) {
 
         <CModal show={showCamModal} onHide={handleCloseCamModal} title="Camera Controls">
           <h5>Select Camera:</h5>
-          <div className='col-10 d-flex flex-row justify-content-between mx-auto py-4'>
-            <div className={`col-4 rounded-pill mx-auto d-flex flex-row justify-content-center py-2`}
-              style={{backgroundColor:(cameraSelected === 'Camera1') ? "#007FA4" : "#dee2e6"}}
-              onClick={() => handleCameraClicked('Camera1')}>
-              <img 
-                src={(cameraSelected === 'Camera1') ? CameraSmallWhite : CameraSmall}
-                alt='Camera Icon'
-                className=' img-fluid pr-2'/>
-                <h5 className={`h6 ${(cameraSelected === 'Camera1') ? 'text-white' : ''}`}>Camera 1</h5>
-            </div>
-            <div className={`col-4 rounded-pill mx-auto d-flex flex-row justify-content-center py-2`}
-              style={{backgroundColor:(cameraSelected === 'Camera2') ? "#007FA4" : "#dee2e6"}}
-              onClick={() => handleCameraClicked('Camera2')}>
-              <img 
-                src={(cameraSelected === 'Camera2') ? CameraSmallWhite : CameraSmall}
-                alt='Camera Icon'
-                className='img-fluid pr-2'/>
-                <h5 className={`h6 ${(cameraSelected === 'Camera2') ? 'text-white' : ''}`}>Camera 2</h5>
-            </div>
+          <div className='col-12 d-flex flex-row justify-content-between mx-auto py-4'>
+          {Array.from({length:numCameras}, (_, index) => {
+              const camNumber = index + 1
+              return(
+                <div key={camNumber} 
+                className={`col-4 rounded-pill d-flex flex-row justify-content-center py-2 mr-2`}
+                style={{backgroundColor:(cameraSelected === camNumber) ? "#007FA4" : "#dee2e6"}}
+                onClick={() => handleCameraClicked(index +1)}
+                onMouseDown={() => {
+                  holdTimeoutRef.current = setTimeout(() => handleCamLongPress(camNumber), 500);
+                }}
+                onMouseUp={() => clearTimeout(holdTimeoutRef.current)}
+                onTouchStart={() => {
+                  holdTimeoutRef.current = setTimeout(() => handleCamLongPress(camNumber), 500);
+                }}
+                onTouchEnd={() => clearTimeout(holdTimeoutRef.current)}
+                onMouseLeave={() => clearTimeout(holdTimeoutRef.current)}>
+                <img 
+                  src={(cameraSelected === camNumber) ? CameraSmallWhite : CameraSmall}
+                  alt='Camera Icon'
+                  className=' img-fluid pr-2'/>
+                  <h5 className={`h6 ${(cameraSelected === camNumber) ? 'text-white' : ''}`}>{camNames[camNumber - 1]}</h5>
+                </div>)
+            })}
           </div>
+          <Modal show={camRenameMode} onHide={handleCancelCamRename} dialogClassName='rename-modal vh-40'>
+            <Modal.Header closeButton>
+              <Modal.Title>Camera Rename</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <InputGroup className="mb-3">
+                <FormControl
+                  placeholder="Enter new camera name"
+                  value={newCamName}
+                  onChange={handleNewCamNameChange}
+                />
+              </InputGroup>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCancelCamRename}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={handleSaveNewCamName}>
+                Save
+              </Button>
+            </Modal.Footer>
+          </Modal>
           {showControls && (
             <div className='pt-4'>
-              <h5 className='pb-3'>Camera {camNum}</h5>
+              <h5 className='pb-3'>{camNames[cameraSelected- 1]}</h5>
               <div className='d-flex flex-row justify-content-between'>
                 <div className='pt-4 pl-4'>
                   <Opad upJoin='241' downJoin='242' leftJoin='243' rightJoin='244'/>
@@ -318,20 +437,58 @@ switch (cameraSelected) {
                     </div>
                 </div>
                 <div className='d-flex flex-column pl-0 pr-3'>
-                  <div className='d-flex flex-row py-3'>
-                    <Button className='btn btn-info rounded-pill mr-4 '>Preset 1</Button>
-                    <Button className='btn btn-info rounded-pill'>Preset 2</Button>
-                  </div>
-                  <div className='d-flex flex-row py-3'>
-                    <Button className='btn btn-info rounded-pill mr-4'>Preset 3</Button>
-                    <Button className='btn btn-info rounded-pill'>Preset 4</Button>
-                  </div>
-                  <div className='d-flex flex-row py-3'>
-                    <Button className='btn btn-info rounded-pill mr-4'>Preset 5</Button>
-                    <Button className='btn btn-info rounded-pill'>Preset 6</Button>
-                  </div>
+                  {Array.from({ length: Math.ceil(numOfPresets / 2) }).map((_, rowIndex) => (
+                      <Row key={rowIndex} className="justify-content-center mb-2" style={{height: '4rem'}}>
+                        {Array.from({ length: 2 }, (_, colIndex) => {
+                          const presetNumber = rowIndex * 2 + colIndex + 1;
+                          return (
+                            presetNumber <= numOfPresets && (
+                              <Col key={presetNumber}  className="" style={{width: '12rem'}}>
+                                <Button
+                                  className='btn btn-info rounded-pill mr-4 border-0'
+                                  style={{height: '3.5rem', fontSize: '1.5rem'}}
+                                  onClick={() => handlePresetClicked(presetNumber)}
+                                  onMouseDown={() => {
+                                    holdTimeoutRef.current = setTimeout(() => handlePresetLongPress(presetNumber), 500);
+                                  }}
+                                  onMouseUp={() => clearTimeout(holdTimeoutRef.current)}
+                                  onMouseLeave={() => clearTimeout(holdTimeoutRef.current)}
+                                  onTouchStart={() => {
+                                    holdTimeoutRef.current = setTimeout(() => handlePresetLongPress(presetNumber), 500);
+                                  }}
+                                  onTouchEnd={() => clearTimeout(holdTimeoutRef.current)}
+                                >
+                                  {presetNames[presetNumber - 1]}
+                                </Button>
+                              </Col>
+                            )
+                          );
+                        })}
+                      </Row>
+                    ))}
                 </div>
-
+                <Modal show={presetRenameMode} onHide={handleCancelPresetRename} dialogClassName='rename-modal vh-40'>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Preset Rename</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <InputGroup className="mb-3">
+                      <FormControl
+                        placeholder="Enter new preset name"
+                        value={newPresetName}
+                        onChange={handleNewPresetNameChange}
+                      />
+                    </InputGroup>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCancelPresetRename}>
+                      Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleSaveNewPresetName}>
+                      Save
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
               </div>
             </div>
           )}
