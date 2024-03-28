@@ -78,28 +78,28 @@ const SourceMenus = () => {
         {/* Source Select Menu Left */}
         <div className="col-2 d-flex flex-column text-start p-0 sourceSelectMenu">
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'PC') ? 'sourceSelectActiveLeft' : ''}`} onClick={() => handleSourceSelected1('200', 'PC')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'PC') ? 'sourceSelectActiveLeft' : 'sourceSelectButtonLeft'}`} onClick={() => handleSourceSelected1('200', 'PC')}>
                 <i className="bi bi-pc-display me-1"></i> Resident Computer
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'Laptop') ? 'sourceSelectActiveLeft' : ''}`} onClick={() => handleSourceSelected1('201', 'Laptop')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'Laptop') ? 'sourceSelectActiveLeft' : 'sourceSelectButtonLeft'}`} onClick={() => handleSourceSelected1('201', 'Laptop')}>
                 <i className="bi bi-laptop me-1"></i> Laptop and Other Sources
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'Wireless') ? 'sourceSelectActiveLeft' : ''}`} onClick={() => handleSourceSelected1('202', 'Wireless')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'Wireless') ? 'sourceSelectActiveLeft' : 'sourceSelectButtonLeft'}`} onClick={() => handleSourceSelected1('202', 'Wireless')}>
                 <img className="containter-fluid me-1" src={WirelessIcon} alt='Wireless icon'
                 style={{width:'var(--font-size-3'}}></img> Wireless with Solstice
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'ConfCall') ? 'sourceSelectActiveLeft' : ''}`} onClick={() => handleSourceSelected1('205', 'ConfCall')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'ConfCall') ? 'sourceSelectActiveLeft' : 'sourceSelectButtonLeft'}`} onClick={() => handleSourceSelected1('205', 'ConfCall')}>
                 <i className="bi bi-telephone me-1"></i> Conference Call
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'DocCam') ? 'sourceSelectActiveLeft' : ''}`} onClick={() => handleSourceSelected1('204', 'DocCam')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'DocCam') ? 'sourceSelectActiveLeft' : 'sourceSelectButtonLeft'}`} onClick={() => handleSourceSelected1('204', 'DocCam')}>
                 <i className="bi bi-journal-text me-1"></i> Document Camera
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'BluRay') ? 'sourceSelectActiveLeft' : ''}`} onClick={() => handleSourceSelected1('203', 'BluRay')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source1 == 'BluRay') ? 'sourceSelectActiveLeft' : 'sourceSelectButtonLeft'}`} onClick={() => handleSourceSelected1('203', 'BluRay')}>
                 <i className="bi bi-disc me-1"></i> Blu-Ray
             </button>
         </div>
@@ -121,28 +121,28 @@ const SourceMenus = () => {
         {/* Source Select Menu Right */}
         <div className="col-2 d-flex flex-column text-start p-0 sourceSelectMenu" >
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'PC') ? 'sourceSelectActiveRight' : ''}`} onClick={() => handleSourceSelected2('430', 'PC')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'PC') ? 'sourceSelectActiveRight' : 'sourceSelectButtonRight'}`} onClick={() => handleSourceSelected2('430', 'PC')}>
                 <i className="bi bi-pc-display me-1"></i> Resident Computer
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'Laptop') ? 'sourceSelectActiveRight' : ''}`} onClick={() => handleSourceSelected2('431', 'Laptop')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'Laptop') ? 'sourceSelectActiveRight' : 'sourceSelectButtonRight'}`} onClick={() => handleSourceSelected2('431', 'Laptop')}>
                 <i className="bi bi-laptop me-1"></i> Laptop and Other Sources
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'Wireless') ? 'sourceSelectActiveRight' : ''}`} onClick={() => handleSourceSelected2('432', 'Wireless')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'Wireless') ? 'sourceSelectActiveRight' : 'sourceSelectButtonRight'}`} onClick={() => handleSourceSelected2('432', 'Wireless')}>
                 <img className="containter-fluid me-1" src={WirelessIcon} alt='Wireless icon'
                 style={{width:'var(--font-size-3'}}></img> Wireless with Solstice
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'ConfCall') ? 'sourceSelectActiveRight' : ''}`} onClick={() => handleSourceSelected2('435', 'ConfCall')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'ConfCall') ? 'sourceSelectActiveRight' : 'sourceSelectButtonRight'}`} onClick={() => handleSourceSelected2('435', 'ConfCall')}>
                 <i className="bi bi-telephone me-1"></i> Conference Call
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'DocCam') ? 'sourceSelectActiveRight' : ''}`} onClick={() => handleSourceSelected2('434', 'DocCam')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'DocCam') ? 'sourceSelectActiveRight' : 'sourceSelectButtonRight'}`} onClick={() => handleSourceSelected2('434', 'DocCam')}>
                 <i className="bi bi-journal-text me-1"></i> Document Camera
             </button>
             <button type="button"
-                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'BluRay') ? 'sourceSelectActiveRight' : ''}`} onClick={() => handleSourceSelected2('433', 'BluRay')}>
+                className={`btn col border-0 border-bottom border-dark font-size-2 font-size-3-xl p-0 py-1 py-xl-2 ${(source2 == 'BluRay') ? 'sourceSelectActiveRight' : 'sourceSelectButtonRight'}`} onClick={() => handleSourceSelected2('433', 'BluRay')}>
                 <i className="bi bi-disc me-1"></i> Blu-Ray
             </button>
         </div>

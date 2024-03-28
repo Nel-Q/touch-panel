@@ -2,12 +2,8 @@ import * as React from 'react';
 import { useState, useEffect } from "react";
 import { Button, Row, Col} from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
+import CModal from './CModal';
 import Opad from './Opad';
-import Camera2 from './Icons/camera2.svg';
-import Lamp from './Icons/lightbulb-fill.svg';
-import Zoom from "./Icons/zoom-in.svg";
-import MinusWhite from './Icons/dashWhite.svg';
-import PlusWhite from './Icons/plusWhite.svg';
 
 function DisplayArea({sourceSelected, displayJoin, side, showAnnotationJoin, showFullScreenJoin,
      annotationJoin, fullscreenJoin, powerOn, powerOff, upJoin, downJoin}) {
@@ -15,6 +11,7 @@ function DisplayArea({sourceSelected, displayJoin, side, showAnnotationJoin, sho
     const [isMuted, setIsMuted] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
     const [bluRayClicked, setBluRayClicked] = useState(false);
+    const [confCallClicked, setConfCallClicked] = useState(false);
     const [blurayButton, setBluRayButton] = useState('');
     const [powerSwitch, setPowerSwitch] = useState(true);
     const [lampSwitch, setLampSwitch] = useState(true);
@@ -54,6 +51,14 @@ function DisplayArea({sourceSelected, displayJoin, side, showAnnotationJoin, sho
     const handleCloseBluRayModal = () => {
         console.log("Closing BluRay Modal")
         setBluRayClicked(false);
+    }
+    const handleShowConfCallModal = () => {
+        console.log("Showing ConfCall Modal")
+        setConfCallClicked(true);
+    }
+    const handleCloseConfCallModal = () => {
+        console.log("Closing ConfCall Modal")
+        setConfCallClicked(false);
     }
     const togglePowerSwitch = () => {
         setPowerSwitch(!powerSwitch)
@@ -152,8 +157,87 @@ function DisplayArea({sourceSelected, displayJoin, side, showAnnotationJoin, sho
         case 'ConfCall':
             message = <span>
                 <p>Select the button below to dial your number.</p>
-                <button className='btn btn-info rounded-pill border-0 px-3 mt-3 font-size-3 font-size-4-xl'>
-                    Conference Call</button>
+                <Button 
+                className="btn btn-info rounded-pill border-0 px-3 mt-3 font-size-3 font-size-4-xl"
+                onClick={handleShowConfCallModal}
+                >Conference Call</Button>
+                {/* Conference Call Modal */}
+                <Modal show={confCallClicked} onHide={handleCloseConfCallModal} fullscreen={fullscreen}>
+                    <Modal.Header closeButton className="pb-0">
+                        <Modal.Title>
+                            <h1 className="font-size-5 font-size-6-xl"><button type="button" className="border-0 text-dark"
+                                onClick={handleCloseConfCallModal}><i className="bi bi-arrow-left"></i></button>Conference Call</h1>
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body className="font-size-2 font-size-3-xl p-0">
+                        <div className='container-fluid text-center pt-3 pt-xl-5'>
+                            <div className="d-flex flex-wrap col-3 col-xl-3 justify-content-around mx-auto">
+                                <div className="d-flex flex-row col-12 justify-content-between">
+                                <div className="col-10">
+                                    <input className="form-control border-0 rounded-pill bg-gray-300 text-muted text-center font-size-1 font-size-3-xl p-2 mb-3"
+                                    placeholder='847-555-5555' />
+                                </div>
+                                <div className="col pt-2">
+                                <i className="bi bi-backspace-fill"></i>
+                                </div>
+                                </div>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">1</span>
+                                    <span className="d-block font-size-1" style={{height: 'var(--font-size-2'}}></span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">2</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">ABC</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">3</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">DEF</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">4</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">GHI</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">5</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">JKL</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">6</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">MNO</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">7</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">PQRS</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">8</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">TUV</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">9</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">WXYZ</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">*</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">0</span>
+                                    <span className="d-block font-size-1 font-size-2-xl">+</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">#</span>
+                                </Button>
+                                <Button className="btn rounded-circle border-0 bg-gray-300 text-dark p-0 mb-2 dialpadButton">
+                                    <span className="d-block fw-bold font-size-4 font-size-5-xl">
+                                        <i className="bi bi-telephone-fill"></i>
+                                    </span>
+                                </Button>
+                                
+                            </div>
+                        </div>
+                    </Modal.Body>
+                </Modal>
+                {/* /Conference Call Modal */}
             </span>;
             break;
         case 'DocCam':
@@ -296,7 +380,7 @@ function DisplayArea({sourceSelected, displayJoin, side, showAnnotationJoin, sho
         <div className="col-12">
             <div className="row m-0">
                 {(sourceSelected == '') ? 
-                    <div className='col bg-dark text-white text-center font-size-3 font-size-4-xl pt-3 pt-xl-4 sourceStatus'>
+                    <div className='col bg-dark text-white text-center font-size-3 font-size-4-xl p-2 p-xl-3 sourceStatus'>
                         <p>Display {displayNum} is off.</p>
                     </div> : 
                     <div className={`col text-center font-size-3 font-size-4-xl p-2 p-xl-3 sourceStatus ${(isMuted ? 'bg-warning' : 'bg-success')}`}>
@@ -311,9 +395,9 @@ function DisplayArea({sourceSelected, displayJoin, side, showAnnotationJoin, sho
             </div>
 
             {/* Button Row */}
-            <div className="row align-items-center m-0 font-size-2 font-size-3-xl contentAreaButtonRow">
+            <div className="row align-items-center m-0 text-center font-size-2 font-size-3-xl contentAreaButtonRow">
                 {isMuted ?
-                    <div className="col-6 p-0 text-center">
+                    <div className="col-6 p-0">
                         <button type="button"
                             className="d-flex align-items-center border-0 rounded-circle text-center text-white mx-auto mb-2 circleIcon"
                             style={{ backgroundColor: 'var(--bs-info)' }} data-bs-toggle="button" onClick={() => toggleMute(displayJoin)}>
@@ -322,7 +406,7 @@ function DisplayArea({sourceSelected, displayJoin, side, showAnnotationJoin, sho
                         </button>
                         <div className="font-size-2 font-size-3-xl">Unmute Display</div>
                     </div> :
-                    <div className="col-6 p-0 text-center">
+                    <div className="col-6 p-0">
                         <button type="button"
                             className="d-flex align-items-center border-0 rounded-circle text-center text-dark mx-auto mb-2 circleIcon"
                             style={{ backgroundColor: '#D5D5D5' }} data-bs-toggle="button" onClick={() => toggleMute(displayJoin)}>
