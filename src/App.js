@@ -15,7 +15,7 @@ window.CrComLib = CrComLib.CrComLib;
 
 const { WebXPanel, isActive, WebXPanelConfigParams, WebXPanelEvents } = getWebXPanel(!runsInContainerApp());
 if (isActive) {
-  WebXPanelConfigParams.host = '129.105.110.238';
+  WebXPanelConfigParams.host = '129.105.110.154';
   WebXPanelConfigParams.ipId = "4";
   
   WebXPanel.initialize(WebXPanelConfigParams);

@@ -121,9 +121,6 @@ function Header(){
     const handleAdminLongPress = () => {
         window.CrComLib.publishEvent('b', '120', true);
       };
-      const handleAdminPWDesktop = () => {
-        window.CrComLib.publishEvent('b', '120', true);
-      };
     const handlePwKeyPres = (joinNumber) => {
         window.CrComLib.publishEvent('b', `${joinNumber}`, true);
         window.CrComLib.publishEvent('b', `${joinNumber}`, false);
@@ -145,6 +142,7 @@ function Header(){
         window.CrComLib.publishEvent('b', '125', false);
         setConfigRoomName(classRoom);
         setConfigIpAdd(ipAdd);
+        setShowResetAlert(true);
         
     }
     const handleCloseResetAlert = () => {
@@ -183,7 +181,6 @@ function Header(){
                     </div>
                     <div className="col-1 text-center p-0">
                         <div className="text-primary py-3 py-xl-4 font-size-1"
-                            onClick={handleAdminPWDesktop}
                             onMouseDown={handleAdminLongPress}
                             onMouseUp={() => window.CrComLib.publishEvent('b', '120', false)}
                             onTouchStart={handleAdminLongPress}
